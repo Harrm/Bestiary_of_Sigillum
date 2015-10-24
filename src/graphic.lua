@@ -1,93 +1,93 @@
-MOAISim.openWindow("Bestiary of Sigillum", 800, 600)
+local Graphic = {}
 
-viewport = MOAIViewport.new()
-viewport:setSize(800, 600)
-viewport:setScale(800, 600)
+function Graphic:init()
+	self.layer = MOAILayer2D.new()
+	self.layer:setViewport(viewport)
 
-layer = MOAILayer2D.new()
-layer:setViewport(viewport)
-MOAISim.pushRenderPass(layer)
- 
-local grid_rows = 8
-local grid_columns = 8
-grid = MOAIGrid.new()
-grid:initHexGrid(grid_columns, grid_rows, 32)
-grid:setRepeat(false)
+	local GRID_COLUMNS = 3
+	local GRID_ROWS = 9
+	self.grid = MOAIGrid.new()
+	self.grid:initHexGrid(GRID_COLUMNS, GRID_ROWS, 32)
+	self.grid:setRepeat(false)
+	
+	self.tileDeck = MOAITileDeck2D.new()
+	self.tileDeck:setTexture("../data/hex-tiles.png")
+	self.tileDeck:setSize(4, 4, 0.25, 0.216796875)
 
-for c = 1, grid_columns do
-	for r = 1, grid_rows do
-		grid:setTile(c, r, ((c + r) % 4) + 1)
-	end
-end
+	self.tilesProp = MOAIProp2D.new()
+	self.tilesProp:setDeck(self.tileDeck)
+	self.tilesProp:setGrid(self.grid)
+	local width, height = self.tilesProp:getDims()
+	print(width, height)
+	self.tilesProp:setLoc(-width/2+24, height/2)
+	self.tilesProp:forceUpdate()
+	self.layer:insertProp(self.tilesProp)
 
-tileDeck = MOAITileDeck2D.new ()
-tileDeck:setTexture("../data/hex-tiles.png")
-tileDeck:setSize(4, 4, 0.25, 0.216796875)
+	local font = MOAIFont.new()
+	font:load("../data/allods_west.ttf")
 
-prop = MOAIProp2D.new()
-prop:setDeck(tileDeck)
-prop:setGrid(grid)
-prop:setLoc(-400, -0)
-prop:forceUpdate()
-layer:insertProp(prop)
-
-cursor = MOAIProp2D.new()
-cursor:setDeck(tileDeck)
-cursor:setScl(grid:getTileSize())
-cursor:addScl(-10)
-layer:insertProp(cursor)
-
-font = MOAIFont.new()
-font:load("../data/allods_west.ttf")
-
-for column = 1, grid_columns do
-	for row = 1, grid_rows do
-		local x, y = grid:getTileLoc(column, row)
-		x, y = prop:modelToWorld(x, y)
-		textbox = MOAITextBox.new()
-		textbox:setFont(font)
-		textbox:setTextSize(20)
-		textbox:setRect(-20, -20, 20, 20)
-		textbox:setLoc(x, y)
-		textbox:setYFlip(true)
-		textbox:setAlignment(MOAITextBox.CENTER_JUSTIFY, MOAITextBox.CENTER_JUSTIFY)
-		layer:insertProp(textbox)
-
-		textbox:setString(string.format("%d,%d", column, row))
+	for c = 1, GRID_COLUMNS do
+		for r = 1, GRID_ROWS do
+			local x, y = self.grid:getTileLoc(c, r)
+			x, y = self.tilesProp:modelToWorld(x, y)
+			textbox = MOAITextBox.new ()
+			textbox:setFont ( font )
+			textbox:setTextSize ( 20 )
+			textbox:setRect ( -20, -20, 20, 20 )
+			textbox:setLoc ( x, y )
+			textbox:setYFlip ( true )
+			textbox:setAlignment ( MOAITextBox.CENTER_JUSTIFY, MOAITextBox.CENTER_JUSTIFY )
+			self.layer:insertProp ( textbox )
+	
+			textbox:setString ( string.format("%d,%d", c, r) )
+		end
 	end
 end
 
 
-----------------------------------------------------------------
-local xTileCoord = 0
-local yTileCoord = 0
 
-function onPointerEvent(x, y)
-	grid:clearTileFlags(xTileCoord, yTileCoord, MOAIGrid.TILE_HIDE)
-	x, y = layer:wndToWorld(x, y)
-	x, y = prop:worldToModel(x, y)
-	xTileCoord, yTileCoord = grid:locToCoord(x, y)
-	
-	x, y = grid:getTileLoc(xTileCoord, yTileCoord, MOAIGrid.TILE_CENTER)
-	x, y = prop:modelToWorld(x, y)
-	cursor:setLoc(x, y)
-	
-	xTileCoord, yTileCoord = grid:wrapCoord(xTileCoord, yTileCoord)
-	cursor:setIndex(grid:getTile(xTileCoord, yTileCoord))
-	
-	grid:setTileFlags(xTileCoord, yTileCoord, MOAIGrid.TILE_HIDE)
+function Graphic:show()
+	self.shown = true
+	MOAIRenderMgr.setRenderTable({self.layer})
 end
 
-function onMouseLeftEvent(down)
-	if down then
-		local x, y = MOAIInputMgr.device.pointer:getLoc()
-		x, y = layer:wndToWorld(x, y)
 
-		print(grid:locToCoord(prop:worldToModel(x, y)))
+
+function Graphic:hide()
+	self.shown = false
+	MOAIRenderMgr.setRenderTable({})
+end
+
+
+function Graphic:setField(field)
+	local gridRows, gridColumns = self.grid:getSize()
+	for column_id, column in pairs(field.cells) do
+		for row_id, cell in pairs(column) do
+			if field:getCell(column_id, row_id) ~= nil then
+				print(column_id, row_id, cell)
+				self.grid:setTile((column_id+1)/2, row_id, cell)
+			end
+		end
 	end
 end
 
 
-MOAIInputMgr.device.pointer:setCallback(onPointerEvent)
-MOAIInputMgr.device.mouseLeft:setCallback(onMouseLeftEvent)
-onPointerEvent(0, 0)
+--[[
+function Graphic:tileToFieldCoords(tileX, tileY)
+	fieldX, fieldY = tileX, tileY
+
+	if tileY % 2 ~= 0 then
+		if tileX ~= 2 then
+			fieldY = tileY - 1
+		end
+		if tileX ~= 1 then
+			fieldX = tileX + math.ceil(tileX/2)
+		end
+	else
+		fieldX = tileX * 2
+	end
+	fieldY = math.ceil(fieldY / 2)
+	return fieldX, fieldY
+end]]
+
+return Graphic
