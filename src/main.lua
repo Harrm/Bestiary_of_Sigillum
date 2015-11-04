@@ -25,3 +25,4 @@ end
 
 gameThread = MOAICoroutine.new()
 gameThread:run(mainLoop)
+
