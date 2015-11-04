@@ -5,7 +5,6 @@ local Field = require('graphic.space_sygil')
 local Logic = require('logic.logic')
 local HeroesIcons = require('graphic.heroes_icons')
 
-
 function Game:start()
 	self:init()
 
@@ -71,7 +70,6 @@ function Game:processInput()
 			
 		end
 	end
-
 end
 
 
