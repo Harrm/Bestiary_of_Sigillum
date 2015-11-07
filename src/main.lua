@@ -13,10 +13,6 @@ RESOURCE_TYPE_TILED_IMAGE = 1
 RESOURCE_TYPE_FONT = 2
 RESOURCE_TYPE_SOUND = 3
 
-function LOG(...)
-	return io.stdout:write(string.format(...))
-end
-
 Game = require("game")
 
 function mainLoop()

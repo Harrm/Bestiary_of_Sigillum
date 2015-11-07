@@ -1,7 +1,7 @@
 local Hero = {}
 
-local Effects = require("effects")
-local Skills = require("skills")
+local Effects = require("logic.effects")
+local Skills = require("logic.skills")
 
 function Hero.new(name, maxHP, attackSkill, supportSkill1, supportSkill2)
 	local newHero = {}
@@ -11,10 +11,10 @@ function Hero.new(name, maxHP, attackSkill, supportSkill1, supportSkill2)
 	newHero.wounds = 0
 	newHero.effects = {}
 
-	newHero.attackSkill = attackSkill
+	--[[newHero.attackSkill = attackSkill
 	newHero.supportSkills = {}
 	newHero.supportSkills[1] = supportSkill1
-	newHero.supportSkills[2] = supportSkill2
+	newHero.supportSkills[2] = supportSkill2]]
 	setmetatable(newHero, {__index = Hero})
 	return newHero
 end
@@ -117,13 +117,13 @@ end
 
 
 
-function Hero:moveTo(x, y)
-	if self.effect.Paralysed then
+function Hero:moveTo(pos)
+	if self.effects.Paralysed then
 		return
 	end
 
-	self.coords.x = x
-	self.coords.y = y
+	self.position.x = pos.x
+	self.position.y = pos.y
 end
 
 

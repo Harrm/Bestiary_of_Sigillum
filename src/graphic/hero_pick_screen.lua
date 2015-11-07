@@ -1,6 +1,6 @@
 local HeroPickScreen = {}
 
---Heroes = require("heroes")
+Heroes = require("logic.heroes")
 
 
 
@@ -53,21 +53,31 @@ end
 
 
 function HeroPickScreen:show()
-	self.shown = true
-	MOAIRenderMgr.setRenderTable({self.layer})
+	if self.shown == false then
+		self.shown = true
+		local renderTable = MOAIRenderMgr.getRenderTable()
+		table.insert(renderTable, 1, self.layer)
+		MOAIRenderMgr.setRenderTable(renderTable)
+	end
 end
 
 
 
 function HeroPickScreen:hide()
-	self.shown = false
-
-	MOAIRenderMgr.setRenderTable({})
+	if self.shown == true then
+		self.shown = false
+		local renderTable = MOAIRenderMgr.getRenderTable()
+		for i, layer in ipairs(renderTable) do
+			if layer == self.layer then
+				table.remove(renderTable, i)
+			end
+		end
+		MOAIRenderMgr.setRenderTable(renderTable)
+	end
 end
 
 
-
-function HeroPickScreen:proccessInput(worldX, worldY)
+function HeroPickScreen:proccessMouse()
 	local modelX, modelY = self.tilesProp:worldToModel(worldX, worldY)
 	local tileX, tileY = self.grid:locToCoord(modelX, modelY)
 	

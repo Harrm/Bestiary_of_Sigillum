@@ -48,8 +48,8 @@ end
 
 
 
-function Field.isAdjast(point1, point2)
-	for _, coords in ipairs(self.getAdjastentsCoords(point1)) do
+function Field:isAdjast(point1, point2)
+	for _, coords in ipairs(self:getAdjastentsCoords(point1)) do
 		if coords.x == point2.x and coords.y == point2.y then
 			return true
 		end
@@ -59,7 +59,7 @@ end
 
 
 
-function Field.getAdjastentsCoords(point)
+function Field:getAdjastentsCoords(point)
 	local x, y = point.x, point.y
 	local adjastents = {
 		{x = x, y = y},

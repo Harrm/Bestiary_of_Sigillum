@@ -28,7 +28,7 @@ function Field:init()
 	local GRID_COLUMNS = 3
 	local GRID_ROWS = 9
 	self.grid = MOAIGrid.new()
-	self.grid:initHexGrid(GRID_COLUMNS, GRID_ROWS, 64)
+	self.grid:initHexGrid(GRID_COLUMNS, GRID_ROWS, 58)
 	self.grid:setRepeat(false)
 	local HIDE = MOAIGridSpace.TILE_HIDE
 	self.grid:setRow(9, HIDE, Field.Landscapes.Castle, HIDE)
@@ -49,7 +49,7 @@ function Field:init()
 	tilesProp:setDeck(tileDeck)
 	tilesProp:setGrid(self.grid)
 	local width, height = tilesProp:getDims()
-	tilesProp:setLoc(-width/2+32, height/2+32)
+	tilesProp:setLoc(-width/2+32, height/2)
 	tilesProp:forceUpdate()
 	self.tilesProp = tilesProp
 	self.layer:insertProp(self.tilesProp)
@@ -82,7 +82,7 @@ function Field:show()
 	if self.shown == false then
 		self.shown = true
 		local renderTable = MOAIRenderMgr.getRenderTable()
-		table.insert(renderTable, self.layer)
+		table.insert(renderTable, 1, self.layer)
 		MOAIRenderMgr.setRenderTable(renderTable)
 	end
 end

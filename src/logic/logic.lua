@@ -14,8 +14,8 @@ function Logic:init(firstPlayerName, secondPlayerName, rate)
 	print("Rate:", rate)
 	
 	self.players = {}
-	self.players.first = {name = firstPlayerName, hp = 27, heroes = {}, basePos = {3, 1}}
-	self.players.second = {name = secondPlayerName, hp = 27, heroes = {}, basePos = {3, 5}}
+	self.players.first = {name = firstPlayerName, hp = 27, heroes = {}, basePos = {x=3, y=1}}
+	self.players.second = {name = secondPlayerName, hp = 27, heroes = {}, basePos = {x=3, y=5}}
 	self.currentPlayer = self.players.first
 
 	self.field = Field:new()
@@ -88,14 +88,14 @@ function Logic:siegePhase()
 		local influence = 0
 		-- for current player
 		for _, hero in ipairs(self.currentPlayer.heroes) do
-			if Field.isAdjast(tower, hero.position) then
+			if Field:isAdjast(tower, hero.position) then
 				influence = influence+1
 			end
 		end
 		-- for opposite player
 		self:nextPlayer()
 		for _, hero in ipairs(self.players.second.heroes) do
-			if Field.isAdjast(tower, hero.position) then
+			if Field:isAdjast(tower, hero.position) then
 				influence = influence-1
 			end
 		end
@@ -195,13 +195,13 @@ end
 
 
 function Logic:getHero(pos)
-	for _, hero in ipairs(players.first.heroes) do
+	for _, hero in ipairs(self.players.first.heroes) do
 		if hero.position.x == pos.x and hero.position.y == pos.y then
 			return hero
 		end
 	end
 
-	for _, hero in ipairs(players.second.heroes) do
+	for _, hero in ipairs(self.players.second.heroes) do
 		if hero.position.x == pos.x and hero.position.y == pos.y then
 			return hero
 		end
@@ -213,9 +213,21 @@ end
 
 
 function Logic:addHero(playerName, hero)
-	if #self.players[playerName].heroes < 4 then
-		table.insert(self.players[playerName].heroes, hero)
-		hero.position = self.players[playerName].basePos
+	local player
+
+	if self.players.first.name == playerName then
+		player = self.players.first
+
+	elseif self.players.second.name == playerName then
+		player = self.players.second
+		
+	else
+		error("Who is "..playerName.."?!")
+	end
+
+	if #player.heroes < 4 then
+		table.insert(player.heroes, hero)
+		hero.position = player.basePos
 	else
 		error("Player can`t own more then 3 heroes")
 	end

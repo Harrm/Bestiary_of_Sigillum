@@ -21,27 +21,6 @@ Skill.MassScopes = {
 	ThreeAdjast, ThreeRange, FiveAdjastToAdjast, SixAdjast, SixAdjastAndSelf
 }
 
-local Field = require("field")
-function Skill.isObjectInScope(startPosition, objectPosition, scope)
-	if scope == Skill.SingleScopes.Self then
-		if startPosition.x == objectPosition.x and 
-			startPosition.y == objectPosition.y then
-			return true
-		end
-
-	elseif scope == Skill.SingleScopes.Adjast then
-		if Field.isAdjast(startPosition, objectPosition) then
-			return true
-		end
-
-	elseif scope == Skill.SingleScopes.ThroughOne then
-		
-
-
-	end
-
-	return false
-end
 
 
 Skills.AttackSkill = {}

@@ -44,7 +44,7 @@ function Menu:show()
 	if self.shown == false then
 		self.shown = true
 		local renderTable = MOAIRenderMgr.getRenderTable()
-		table.insert(renderTable, self.layer)
+		table.insert(renderTable, 1, self.layer)
 		MOAIRenderMgr.setRenderTable(renderTable)
 	end
 end

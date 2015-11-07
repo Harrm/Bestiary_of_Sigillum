@@ -1,10 +1,10 @@
 local Heroes = {}
 
-local Hero = require("hero")
-local Field = require("field")
-local Skills = require("skills")
-local Effects = require("effects")
-
+local Hero = require("logic.hero")
+local Field = require("logic.field")
+local Skills = require("logic.skills")
+local Effects = require("logic.effects")
+--[[
 local AttackSkills = {}
 AttackSkills.SeverityOfRetaliation = {}
 
@@ -67,9 +67,9 @@ SupportSkills.PrisonerSnackles = Skills.SupportSkill.new("Prisoner Snackles",
 											   SupportSkills.PrisonerSnackles.castCallback)
 
 
-
-Heroes = {
-	Vinctume = Hero.new("Vinctume", 4, AttackSkills.SeverityOfRetaliation, SupportSkills.IronMask, SupportSkills.PrisonerSnackles)
+]]
+local Heroes = {
+	Vinctume = Hero.new("Vinctume", 4)--, AttackSkills.SeverityOfRetaliation, SupportSkills.IronMask, SupportSkills.PrisonerSnackles)
 }
 
 return Heroes

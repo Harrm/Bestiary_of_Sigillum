@@ -9,7 +9,9 @@ local heroes_icons = {
 	tileMapSize = {3, 3}
 }
 
-function HeroesIcons:init()
+function HeroesIcons:create()
+	local self = {}
+
 	local viewport = MOAIViewport.new()
 	viewport:setSize(SCREEN_RESOLUTION_X, SCREEN_RESOLUTION_Y)
 	viewport:setScale(WORLD_SIZE_X, WORLD_SIZE_Y)
@@ -25,6 +27,16 @@ function HeroesIcons:init()
 	self.tileDeck:setRect(-32, -32, 32, 32)
 
 	self.icons = {}
+
+	self.heroNames = {
+		Vinctume=1, Ferrarius=2, Suxum=3,
+		Cerberus=4, Redux=5, Ballistarius=6,
+		Manus=7, Messum=8, Goecio=9
+	}
+
+	setmetatable(self, {__index = HeroesIcons})
+
+	return self
 end
 
 
@@ -33,7 +45,7 @@ function HeroesIcons:show()
 	if not self.shown then
 		self.shown = true
 		local renderTable = MOAIRenderMgr.getRenderTable()
-		table.insert(renderTable, self.layer)
+		table.insert(renderTable, 1, self.layer)
 		MOAIRenderMgr.setRenderTable(renderTable)
 	end
 end
@@ -41,7 +53,7 @@ end
 
 
 function HeroesIcons:hide()
-	if not self.shown then
+	if self.shown then
 		self.shown = false
 		local renderTable = MOAIRenderMgr.getRenderTable()
 		for i, layer in ipairs(renderTable) do
@@ -55,13 +67,13 @@ end
 
 
 
-function HeroesIcons:addHero(index, pos)
+function HeroesIcons:addHero(name, pos)
 	local prop = MOAIProp2D.new()
 	prop:setDeck(self.tileDeck)
 	prop:setLoc(pos.x, pos.y)
-	prop:setIndex(index)
+	prop:setIndex(self.heroNames[name])
 	self.layer:insertProp(prop)
-	table.insert(self.icons, prop)
+	self.icons[name] = prop
 end
 
 
