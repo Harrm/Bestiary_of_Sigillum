@@ -6,7 +6,7 @@ local Skills = require("logic.skills")
 function Hero.new(name, maxHP, attackSkill, supportSkill1, supportSkill2)
 	local newHero = {}
 	newHero.name = name or error("You must specify hero name")
-	newHero.position = {x=1, y=1}
+	newHero._position = {x=1, y=1}
 	newHero.maxHP = maxHP or error("You must specify hero health power")
 	newHero.wounds = 0
 	newHero.effects = {}
@@ -121,9 +121,16 @@ function Hero:moveTo(pos)
 	if self.effects.Paralysed then
 		return
 	end
+	self._position.x = pos.x
+	self._position.y = pos.y
+end
 
-	self.position.x = pos.x
-	self.position.y = pos.y
+
+
+function Hero:getPosition()
+	local position = {x=self._position.x, y=self._position.y}
+
+	return position
 end
 
 

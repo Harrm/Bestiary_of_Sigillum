@@ -18,51 +18,94 @@ end
 
 
 function Game:init()
+	Logic:init("Radiant", "Dire")
+	Logic:addHero("Radiant", Heroes.Vinctume)
+	Logic:addHero("Radiant", Heroes.Redux)
+	Logic:addHero("Radiant", Heroes.Manus)
+	Logic:addHero("Dire", Heroes.Ferrarius)
+	Logic:addHero("Dire", Heroes.Ballistarius)
+	Logic:addHero("Dire", Heroes.Messum)
+
 	Graphic:init()
-	Graphic.newGameCallback = function()self:newGame()end
-	Graphic.exitCallback = function() Game.isOver=true end
-	Graphic.tileCheckedCallback = function(x, y)self:tileChecked(x, y)end
+	Graphic.newGameCallback = function() self:newGame() end
+	Graphic.exitCallback = function() Game.isOver = true end
+	Graphic.tileCheckedCallback = function(x, y) self:tileChecked(x, y) end
+	Graphic.nextPhaseCallback = function() Logic:nextPhase() end
+	Graphic.heroCheckedCallback = 
+		function(heroName) self:setCurrentHero(Logic:getHero(nil, heroName)) end
+	
 	MOAIInputMgr.device.keyboard:setCallback(self.onKeyboardEvent)
 end
 
 
 
 function Game:newGame()
-	Logic:init("Radiant", "Dire")
-	Logic:addHero("Radiant", Heroes.Vinctume)
-
 	Logic:start()
 	self:createHeroesIcons()
-	Graphic.phaseTextbox:setString(Logic.phase.." phase")
+	Graphic:update()
 end
 
 
 
 function Game:tileChecked(tileX, tileY)
-	local logicCoords = self:graphicToLogicCoords({x=tileX, y=tileY})
+	local logicCoords = Game.graphicToLogicCoords({x=tileX, y=tileY})
 	local hero = Logic:getHero(logicCoords)
 	if hero ~= nil then
-		self.currentHero = hero
-	
+		self:setCurrentHero(hero)
+
 	elseif self.currentHero ~= nil then
-		self.currentHero:moveTo(logicCoords)
-		local graphicCoords = self:logicToGraphicCoords(self.currentHero.position)
+		Logic:moveHero(self.currentHero, logicCoords)
+		local graphicCoords = Game.logicToGraphicCoords(self.currentHero:getPosition())
 		Graphic:moveHeroIcon(self.currentHero.name, graphicCoords.x, graphicCoords.y)
 	end
+	Graphic:update()
+end
+
+
+
+function Game:setCurrentHero(hero)
+	if self.currentHero ~= nil then
+		Graphic.heroesIcons.icons[self.currentHero.name]:setScl(1)
+	end
+	self.currentHero = hero
+	Graphic.heroesIcons.icons[hero.name]:setScl(0.9)
+end
+
+
+
+function Game:heroChecked(heroName)
+
+
 end
 
 
 
 function Game:createHeroesIcons()
-	for _, hero in pairs(Logic:getHeroes()) do
-		local tile = self:logicToGraphicCoords(hero.position)
+	for _, hero in pairs(Logic.players.first.heroes) do
+		local tile = Game.logicToGraphicCoords(hero:getPosition())
 		Graphic:addHeroIcon(hero.name, tile.x, tile.y)
+	end
+
+	for _, hero in pairs(Logic.players.second.heroes) do
+		local tile = Game.logicToGraphicCoords(hero:getPosition())
+		Graphic:addHeroIcon(hero.name, tile.x, tile.y)
+	end
+
+end
+
+
+
+function Game.onKeyboardEvent(key, down)
+	if down then
+		if key == 27 then
+			Graphic:showMenu()
+		end
 	end
 end
 
 
 
-function Game:logicToGraphicCoords(logicCoords)
+function Game.logicToGraphicCoords(logicCoords)
 	local graphicCoords = {}
 
 	graphicCoords.x = math.ceil(logicCoords.x / 2)
@@ -82,7 +125,7 @@ end
 
 
 
-function Game:graphicToLogicCoords(graphicCoords)
+function Game.graphicToLogicCoords(graphicCoords)
 	local logicCoords = {}
 
 	if graphicCoords.y % 2 == 0 then
@@ -98,16 +141,6 @@ function Game:graphicToLogicCoords(graphicCoords)
 	end
 
 	return logicCoords
-end
-
-
-
-function Game.onKeyboardEvent(key, down)
-	if down then
-		if key == 27 then
-			Graphic:showMenu()
-		end
-	end
 end
 
 return Game

@@ -3,8 +3,9 @@ local Graphic = {}
 local Menu = require('graphic.menu')
 local Field = require('graphic.space_sygil')
 local HeroesIcons = require('graphic.heroes_icons')
-
-
+local Logic = require('logic.logic')
+Graphic.GUI = require('graphic.gui')
+local GUI = Graphic.GUI
 
 function Graphic:init()
 	if DEBUG then
@@ -26,10 +27,9 @@ function Graphic:init()
 	MOAIRenderMgr.setRenderTable({self.layer})
 
 	Menu:init()
-
 	Menu:show()
 
-	self.phaseTextbox = Menu:createTextbox("Phase", {x = 0, y = 250}, {width=300, height=50}, 28)
+	GUI:init()
 	
 	Field:init()
 	self.heroesIcons = HeroesIcons:create()
@@ -54,11 +54,26 @@ function Graphic:processMouse()
 			end
 
 		elseif Field.shown then
-			local modelX, modelY = Field.tilesProp:worldToModel(worldX, worldY)
-			local tileX, tileY = Field.grid:locToCoord(modelX, modelY)
+			local checkedHeroName = nil
+			for heroName, textbox in pairs(GUI.heroesBars) do
+				if textbox:inside(worldX, worldY) then
+					checkedHeroName = heroName
+				end
+			end
+			if checkedHeroName ~= nil then
+				self.heroCheckedCallback(checkedHeroName)
 
-			self.tileCheckedCallback(tileX, tileY)
+			elseif GUI.nextPhaseTextbox:inside(worldX, worldY) then
+				self.nextPhaseCallback()
+			
+			elseif Field.tilesProp:inside(worldX, worldY) then
+				local modelX, modelY = Field.tilesProp:worldToModel(worldX, worldY)
+				local tileX, tileY = Field.grid:locToCoord(modelX, modelY)
+
+				self.tileCheckedCallback(tileX, tileY)
+			end
 		end
+		self:update()
 	end
 end
 
@@ -66,8 +81,8 @@ end
 
 function Graphic:showMenu()
 	Field:hide()
-	self.layer:removeProp(self.phaseTextbox)
 	self.heroesIcons:hide()
+	GUI:hide()
 	Menu:show()
 end
 
@@ -76,8 +91,14 @@ end
 function Graphic:showField()
 	Menu:hide()
 	self.heroesIcons:show()
+	GUI:show()
 	Field:show()
-	self.layer:insertProp(self.phaseTextbox)
+end
+
+
+
+function Graphic:update()
+	GUI:update()
 end
 
 
@@ -97,7 +118,5 @@ function Graphic:moveHeroIcon(name, tileX, tileY)
 	local propX, propY = prop:getLoc()
 	MOAICoroutine.blockOnAction(prop:seekLoc(worldX, worldY, 1))
 end
-
-
 
 return Graphic

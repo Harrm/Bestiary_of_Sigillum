@@ -69,7 +69,15 @@ SupportSkills.PrisonerSnackles = Skills.SupportSkill.new("Prisoner Snackles",
 
 ]]
 local Heroes = {
-	Vinctume = Hero.new("Vinctume", 4)--, AttackSkills.SeverityOfRetaliation, SupportSkills.IronMask, SupportSkills.PrisonerSnackles)
+	Vinctume = Hero.new("Vinctume", 4),-- AttackSkills.SeverityOfRetaliation, SupportSkills.IronMask, SupportSkills.PrisonerSnackles)
+	Ferrarius = Hero.new("Ferrarius", 4),
+	Suxum = Hero.new("Suxum", 4),
+	Cerberus = Hero.new("Cerberus", 3),
+	Redux = Hero.new("Redux", 3), 
+	Ballistarius = Hero.new("Ballistarius", 3),
+	Manus = Hero.new("Manus", 2), 
+	Messum = Hero.new("Messum", 2), 
+	Goecio = Hero.new("Goecio", 2)
 }
 
 return Heroes

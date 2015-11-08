@@ -88,14 +88,14 @@ function Logic:siegePhase()
 		local influence = 0
 		-- for current player
 		for _, hero in ipairs(self.currentPlayer.heroes) do
-			if Field:isAdjast(tower, hero.position) then
+			if Field:isAdjast(tower, hero:getPosition()) then
 				influence = influence+1
 			end
 		end
 		-- for opposite player
 		self:nextPlayer()
 		for _, hero in ipairs(self.players.second.heroes) do
-			if Field:isAdjast(tower, hero.position) then
+			if Field:isAdjast(tower, hero:getPosition()) then
 				influence = influence-1
 			end
 		end
@@ -119,7 +119,7 @@ end
 function Logic:preparePhase()
 	-- for current player
 	for _, hero in ipairs(self.currentPlayer.heroes) do
-		for effect in hero.effects do
+		for effect, _ in pairs(hero.effects) do
 			if not Effects.isNegative(effect) then
 				hero.effects[effect] = nil
 			end
@@ -128,7 +128,7 @@ function Logic:preparePhase()
 	-- for opposite player
 	self:nextPlayer()
 	for _, hero in ipairs(self.currentPlayer.heroes) do
-		for effect in hero.effects do
+		for effect, _ in pairs(hero.effects) do
 			if Effects.isNegative(effect) then
 				hero.effects[effect] = nil
 			end
@@ -177,10 +177,10 @@ end
 function Logic:castSkill(caster, targets, supportSkillId)
 	for _, hero in ipairs(self.currentPlayer.heroes) do
 		if caster == hero then
-			if self.phase == Logic.Phases.Attack then
+			if self.phase == "Attack" then
 				caster:castAttackSkill(targets)
 			
-			elseif self.phase == Logic.Phases.Support then
+			elseif self.phase == "Support" then
 				caster:castSupportSkill(supportSkillId, targets)
 			
 			else
@@ -194,18 +194,39 @@ end
 
 
 
-function Logic:getHero(pos)
+function Logic:moveHero(hero, pos)
+	if self.phase == "Attack" then
+		for _, player_hero in pairs(self.currentPlayer.heroes) do
+			if hero ==  player_hero then
+				if Field:isAdjast(hero:getPosition(), pos) then
+					hero:moveTo(pos)
+				end
+			end
+		end
+	end
+end
+
+
+
+function Logic:getHero(pos, name)
+	if pos == nil and name == nil then
+		error("You must specify hero position and/or name")
+	end
+
 	for _, hero in ipairs(self.players.first.heroes) do
-		if hero.position.x == pos.x and hero.position.y == pos.y then
+		if (pos ~= nil and hero:getPosition().x == pos.x and hero:getPosition().y == pos.y) or
+			(name ~= nil and hero.name == name) then
 			return hero
 		end
 	end
 
 	for _, hero in ipairs(self.players.second.heroes) do
-		if hero.position.x == pos.x and hero.position.y == pos.y then
+		if (pos ~= nil and hero:getPosition().x == pos.x and hero:getPosition().y == pos.y) or
+			(name ~= nil and hero.name == name) then
 			return hero
 		end
 	end
+
 
 	return nil
 end
@@ -225,9 +246,9 @@ function Logic:addHero(playerName, hero)
 		error("Who is "..playerName.."?!")
 	end
 
-	if #player.heroes < 4 then
+	if #player.heroes < 3 then
 		table.insert(player.heroes, hero)
-		hero.position = player.basePos
+		hero:moveTo(player.basePos)
 	else
 		error("Player can`t own more then 3 heroes")
 	end
@@ -241,20 +262,6 @@ function Logic:nextPlayer()
 	else
 		self.currentPlayer = self.players.first
 	end
-end
-
-
-
-function Logic:getHeroes()
-	local heroes = {}
-	for _, hero in pairs(self.players.first.heroes) do
-		table.insert(heroes, hero)
-	end
-
-	for _, hero in pairs(self.players.second.heroes) do
-		table.insert(heroes, hero)
-	end
-	return heroes
 end
 
 return Logic
