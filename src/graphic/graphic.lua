@@ -115,8 +115,11 @@ function Graphic:moveHeroIcon(name, tileX, tileY)
 	local modelX, modelY = Field.grid:getTileLoc(tileX, tileY)
 	local worldX, worldY = Field.tilesProp:modelToWorld(modelX, modelY)
 	local prop = self.heroesIcons.icons[name]
-	local propX, propY = prop:getLoc()
-	MOAICoroutine.blockOnAction(prop:seekLoc(worldX, worldY, 1))
+	if not prop.moving then
+		local propX, propY = prop:getLoc()
+		prop.moving = true
+		prop:seekLoc(worldX, worldY, 1):setListener(MOAITimer.EVENT_TIMER_END_SPAN, function() prop.moving = false end)
+	end
 end
 
 return Graphic

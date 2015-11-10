@@ -49,11 +49,26 @@ end
 
 
 function Field:isAdjast(point1, point2)
-	for _, coords in ipairs(self:getAdjastentsCoords(point1)) do
+	local adjastents = self:getAdjastentsCoords(point1)
+
+	for _, coords in pairs(adjastents) do
+		print(coords.x, coords.y)
 		if coords.x == point2.x and coords.y == point2.y then
 			return true
 		end
 	end
+
+	point1, point2 = point2, point1
+
+	adjastents = self:getAdjastentsCoords(point1)
+
+	for _, coords in pairs(adjastents) do
+		print(coords.x, coords.y)
+		if coords.x == point2.x and coords.y == point2.y then
+			return true
+		end
+	end
+
 	return false
 end
 
@@ -63,17 +78,17 @@ function Field:getAdjastentsCoords(point)
 	local x, y = point.x, point.y
 	local adjastents = {
 		{x = x, y = y},
-		{x = x-1, y = y-1},
-		{x = x-1, y = y  },
 		{x = x,   y = y+1},
 		{x = x,   y = y-1},
+		{x = x-1, y = y  },
+		{x = x-1, y = y-1},
 		{x = x+1, y = y  },
 		{x = x+1, y = y-1}
 	}
 
 	for i, pos in ipairs(adjastents) do
-		if self[pos.x] == nil or self[pos.x][pos.y] == nil then
-			table.remove(adjastents, i)
+		if self.cells[pos.x] == nil or self.cells[pos.x][pos.y] == nil then
+			adjastents[i] = nil
 		end
 	end
 

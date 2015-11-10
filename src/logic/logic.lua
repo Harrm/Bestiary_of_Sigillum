@@ -54,7 +54,7 @@ function Logic:nextPhase()
 		currentPriority = 1
 		self:nextPlayer()
 		if self.currentPlayer == self.players.first then
-			updateSkillsCD()
+			self:updateSkillsCD()
 		end
 	end
 	self.phase = self.PhasesPriorities[currentPriority]
@@ -88,14 +88,14 @@ function Logic:siegePhase()
 		local influence = 0
 		-- for current player
 		for _, hero in ipairs(self.currentPlayer.heroes) do
-			if Field:isAdjast(tower, hero:getPosition()) then
+			if self.field:isAdjast(tower, hero:getPosition()) then
 				influence = influence+1
 			end
 		end
 		-- for opposite player
 		self:nextPlayer()
 		for _, hero in ipairs(self.players.second.heroes) do
-			if Field:isAdjast(tower, hero:getPosition()) then
+			if self.field:isAdjast(tower, hero:getPosition()) then
 				influence = influence-1
 			end
 		end
@@ -198,11 +198,17 @@ function Logic:moveHero(hero, pos)
 	if self.phase == "Attack" then
 		for _, player_hero in pairs(self.currentPlayer.heroes) do
 			if hero ==  player_hero then
-				if Field:isAdjast(hero:getPosition(), pos) then
+				if self.field:isAdjast(hero:getPosition(), pos) then
 					hero:moveTo(pos)
+				else
+					print ("Not adjast;",
+						hero:getPosition().x, hero:getPosition().y,
+						pos.x, pos.y)
 				end
 			end
 		end
+	else
+		print 'Incorrect phase'
 	end
 end
 

@@ -34,6 +34,7 @@ function Game:init()
 	Graphic.heroCheckedCallback = 
 		function(heroName) self:setCurrentHero(Logic:getHero(nil, heroName)) end
 	
+	self:createHeroesIcons()
 	MOAIInputMgr.device.keyboard:setCallback(self.onKeyboardEvent)
 end
 
@@ -41,24 +42,28 @@ end
 
 function Game:newGame()
 	Logic:start()
-	self:createHeroesIcons()
 	Graphic:update()
 end
 
 
 
 function Game:tileChecked(tileX, tileY)
+	io.flush()
 	local logicCoords = Game.graphicToLogicCoords({x=tileX, y=tileY})
 	local hero = Logic:getHero(logicCoords)
 	if hero ~= nil then
 		self:setCurrentHero(hero)
 
 	elseif self.currentHero ~= nil then
+		print("Move", self.currentHero.name, "to", logicCoords.x, logicCoords.y,
+				"from", self.currentHero:getPosition().x, self.currentHero:getPosition().y)
 		Logic:moveHero(self.currentHero, logicCoords)
+		print("Now is", self.currentHero:getPosition().x, self.currentHero:getPosition().y)
 		local graphicCoords = Game.logicToGraphicCoords(self.currentHero:getPosition())
 		Graphic:moveHeroIcon(self.currentHero.name, graphicCoords.x, graphicCoords.y)
 	end
 	Graphic:update()
+	io.flush()
 end
 
 
