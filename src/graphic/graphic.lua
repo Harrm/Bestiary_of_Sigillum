@@ -97,6 +97,23 @@ end
 
 
 
+function Graphic:showVictoryScreen(winner_name)
+	MOAIRenderMgr.setRenderTable({self.layer})
+
+	local textbox = MOAITextBox.new()
+	textbox:setString("Victory: Player "..winner_name)
+	textbox:setFont(ResourceManager:get("allods_west"))
+	textbox:setRect(-150, -50, 
+					150, 50)
+	textbox:setYFlip(true)
+	textbox:setAlignment(MOAITextBox.CENTER_JUSTIFY, MOAITextBox.CENTER_JUSTIFY)
+	textbox:setTextSize(32)
+
+	self.layer:insertProp(textbox)
+end
+
+
+
 function Graphic:update()
 	GUI:update()
 end
@@ -115,10 +132,16 @@ function Graphic:moveHeroIcon(name, tileX, tileY)
 	local modelX, modelY = Field.grid:getTileLoc(tileX, tileY)
 	local worldX, worldY = Field.tilesProp:modelToWorld(modelX, modelY)
 	local prop = self.heroesIcons.icons[name]
+
 	if not prop.moving then
 		local propX, propY = prop:getLoc()
 		prop.moving = true
-		prop:seekLoc(worldX, worldY, 1):setListener(MOAITimer.EVENT_TIMER_END_SPAN, function() prop.moving = false end)
+		self.action = prop:seekLoc(worldX, worldY, 1)
+		self.action:setListener(MOAITimer.EVENT_TIMER_END_SPAN, function() prop.moving = false end)
+	else
+		self.action:stop()
+		self.action = prop:seekLoc(worldX, worldY, 1)
+		self.action:setListener(MOAITimer.EVENT_TIMER_END_SPAN, function() prop.moving = false end)
 	end
 end
 
