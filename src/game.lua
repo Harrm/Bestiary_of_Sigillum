@@ -30,7 +30,7 @@ function Game:init()
 	Graphic.newGameCallback = function() self:newGame() end
 	Graphic.exitCallback = function() Game.isOver = true end
 	Graphic.tileCheckedCallback = function(x, y) self:tileChecked(x, y) end
-	Graphic.nextPhaseCallback = function() Logic:nextPhase() end
+	Graphic.nextPhaseCallback = function() Logic:nextPhase(); if Logic:isGameOver() then Graphic:showVictoryScreen(Logic.currentPlayer.name) end; end
 	Graphic.heroCheckedCallback = 
 		function(heroName) self:setCurrentHero(Logic:getHero(nil, heroName)) end
 	
@@ -43,25 +43,24 @@ end
 function Game:newGame()
 	Logic:start()
 	Graphic:update()
+	Logic.players.second.hp = 0
 end
 
 
 
 function Game:tileChecked(tileX, tileY)
 	io.flush()
-	local logicCoords = Game.graphicToLogicCoords({x=tileX, y=tileY})
+	local logicCoords = {x=tileX, y=tileY}
 	local hero = Logic:getHero(logicCoords)
 	if hero ~= nil then
 		self:setCurrentHero(hero)
 
 	elseif self.currentHero ~= nil then
-		print("Move", self.currentHero.name, "to", logicCoords.x, logicCoords.y,
-				"from", self.currentHero:getPosition().x, self.currentHero:getPosition().y)
 		Logic:moveHero(self.currentHero, logicCoords)
-		print("Now is", self.currentHero:getPosition().x, self.currentHero:getPosition().y)
-		local graphicCoords = Game.logicToGraphicCoords(self.currentHero:getPosition())
+		local graphicCoords = self.currentHero:getPosition()
 		Graphic:moveHeroIcon(self.currentHero.name, graphicCoords.x, graphicCoords.y)
 	end
+
 	Graphic:update()
 	io.flush()
 end
@@ -87,14 +86,15 @@ end
 
 function Game:createHeroesIcons()
 	for _, hero in pairs(Logic.players.first.heroes) do
-		local tile = Game.logicToGraphicCoords(hero:getPosition())
+		local tile = hero:getPosition()
 		Graphic:addHeroIcon(hero.name, tile.x, tile.y)
 	end
 
 	for _, hero in pairs(Logic.players.second.heroes) do
-		local tile = Game.logicToGraphicCoords(hero:getPosition())
+		local tile = hero:getPosition()
 		Graphic:addHeroIcon(hero.name, tile.x, tile.y)
 	end
+
 
 end
 
@@ -109,7 +109,7 @@ function Game.onKeyboardEvent(key, down)
 end
 
 
-
+--[[
 function Game.logicToGraphicCoords(logicCoords)
 	local graphicCoords = {}
 
@@ -146,6 +146,6 @@ function Game.graphicToLogicCoords(graphicCoords)
 	end
 
 	return logicCoords
-end
+end--]]
 
 return Game

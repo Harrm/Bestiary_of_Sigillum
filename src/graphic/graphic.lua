@@ -6,6 +6,16 @@ local HeroesIcons = require('graphic.heroes_icons')
 local Logic = require('logic.logic')
 Graphic.GUI = require('graphic.gui')
 local GUI = Graphic.GUI
+local ResourceManager = require('resource_manager')
+local ResourceDefinitions = require("resource_definitions")
+
+local allods_west = {
+	type = RESOURCE_TYPE_FONT,
+	fileName = "allods_west.ttf",
+	glyphs = "qwertyuiopasdfghjklzxcvbnm,./;'[]!@#$%^&*()_+-=QWERTYUIOPASDFGHJKLZXCVBNM0123456789",
+	fontSize = 26,
+	dpi = 160
+}
 
 function Graphic:init()
 	if DEBUG then
@@ -23,6 +33,19 @@ function Graphic:init()
 
 	self.layer = MOAILayer2D.new()
 	self.layer:setViewport(viewport)
+
+	ResourceDefinitions:set("allods_west", allods_west)
+
+	local textbox = MOAITextBox.new()
+	textbox:setFont(ResourceManager:get("allods_west"))
+	textbox:setLoc(0, 0)
+	textbox:setRect(-150, -50, 
+						 150, 50)
+	textbox:setYFlip(true)
+	textbox:setAlignment(MOAITextBox.CENTER_JUSTIFY, MOAITextBox.CENTER_JUSTIFY)
+	textbox:setTextSize(32)
+	
+	self.textbox = textbox
 
 	MOAIRenderMgr.setRenderTable({self.layer})
 
@@ -80,6 +103,7 @@ end
 
 
 function Graphic:showMenu()
+	self.layer:removeProp(self.textbox)
 	Field:hide()
 	self.heroesIcons:hide()
 	GUI:hide()
@@ -89,6 +113,7 @@ end
 
 
 function Graphic:showField()
+	self.layer:removeProp(self.textbox)
 	Menu:hide()
 	self.heroesIcons:show()
 	GUI:show()
@@ -100,16 +125,9 @@ end
 function Graphic:showVictoryScreen(winner_name)
 	MOAIRenderMgr.setRenderTable({self.layer})
 
-	local textbox = MOAITextBox.new()
-	textbox:setString("Victory: Player "..winner_name)
-	textbox:setFont(ResourceManager:get("allods_west"))
-	textbox:setRect(-150, -50, 
-					150, 50)
-	textbox:setYFlip(true)
-	textbox:setAlignment(MOAITextBox.CENTER_JUSTIFY, MOAITextBox.CENTER_JUSTIFY)
-	textbox:setTextSize(32)
-
-	self.layer:insertProp(textbox)
+	self.textbox:setString(winner_name.." victory")
+	
+	self.layer:insertProp(self.textbox)
 end
 
 

@@ -14,8 +14,8 @@ function Logic:init(firstPlayerName, secondPlayerName, rate)
 	print("Rate:", rate)
 	
 	self.players = {}
-	self.players.first = {name = firstPlayerName, hp = 27, heroes = {}, basePos = {x=3, y=1}}
-	self.players.second = {name = secondPlayerName, hp = 27, heroes = {}, basePos = {x=3, y=5}}
+	self.players.first = {name = firstPlayerName, hp = 27, heroes = {}, basePos = {x=2, y=1}}
+	self.players.second = {name = secondPlayerName, hp = 27, heroes = {}, basePos = {x=2, y=9}}
 	self.currentPlayer = self.players.first
 
 	self.field = Field:new()
@@ -35,7 +35,7 @@ end
 
 
 function Logic:isGameOver()
-	return self.players.first.hp == 0 or self.players.second.hp == 0
+	return self.players.first.hp < 1 or self.players.second.hp < 1
 end
 
 

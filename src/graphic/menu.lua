@@ -1,15 +1,6 @@
 local Menu = {}
 
 local ResourceManager = require("resource_manager")
-local ResourceDefinitions = require("resource_definitions")
-
-local allods_west = {
-	type = RESOURCE_TYPE_FONT,
-	fileName = "allods_west.ttf",
-	glyphs = "qwertyuiopasdfghjklzxcvbnm,./;'[]!@#$%^&*()_+-=QWERTYUIOPASDFGHJKLZXCVBNM0123456789",
-	fontSize = 26,
-	dpi = 160
-}
 
 
 
@@ -20,8 +11,6 @@ function Menu:init()
 
 	self.layer = MOAILayer2D.new()
 	self.layer:setViewport(viewport)
-
-	ResourceDefinitions:set("allods_west", allods_west)
 
 	self.shown = false
 
