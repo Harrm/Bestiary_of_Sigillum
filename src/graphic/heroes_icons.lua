@@ -9,6 +9,12 @@ local heroes_icons = {
 	tileMapSize = {3, 3}
 }
 
+local auras = {
+	type = RESOURCE_TYPE_TILED_IMAGE,
+	fileName = "aura.png",
+	tileMapSize = {2, 1}
+}
+
 function HeroesIcons:create()
 	local self = {}
 
@@ -20,13 +26,19 @@ function HeroesIcons:create()
 	self.layer:setViewport(viewport)
 	
 	ResourceDefinitions:set("heroes_icons", heroes_icons)
+	ResourceDefinitions:set("auras", auras)
 
 	self.shown = false
 	
-	self.tileDeck = ResourceManager:get("heroes_icons")
-	self.tileDeck:setRect(-32, -32, 32, 32)
+	self.iconsDeck = ResourceManager:get("heroes_icons")
+	self.iconsDeck:setRect(-42, -42, 42, 42)
 
 	self.icons = {}
+
+	self.aurasDeck = ResourceManager:get("auras")
+	self.aurasDeck:setRect(-52, -52, 52, 52)
+
+	self.auras = {}
 
 	self.heroNames = {
 		Vinctume=1, Ferrarius=2, Suxum=3,
@@ -67,14 +79,53 @@ end
 
 
 
-function HeroesIcons:addHero(name, pos)
-	local prop = MOAIProp2D.new()
-	prop:setDeck(self.tileDeck)
-	prop:setLoc(pos.x, pos.y)
-	prop:setIndex(self.heroNames[name])
-	self.layer:insertProp(prop)
-	self.icons[name] = prop
+function HeroesIcons:addHero(name, pos, isEnemy)
+	local aura = MOAIProp2D.new()
+	aura:setDeck(self.aurasDeck)
+	aura:setIndex(isEnemy and 1 or 2)
+	self.layer:insertProp(aura)
+	self.auras[name] = aura
+
+	local icon = MOAIProp2D.new()
+	icon:setDeck(self.iconsDeck)
+	icon:setLoc(pos.x, pos.y)
+	icon:setIndex(self.heroNames[name])
+	self.layer:insertProp(icon)
+	self.icons[name] = icon
+
+	self.auras[name]:setParent(self.icons[name])
 end
+
+
+
+function HeroesIcons:moveHero(name, pos)
+	local icon = self.icons[name]
+
+	if not icon.moving then
+		icon.moving = true
+		self.action = icon:seekLoc(pos.x, pos.y, 0.5, MOAIEaseType.SOFT_EASE_OUT)
+		self.action:setListener(MOAITimer.EVENT_TIMER_END_SPAN, function() icon.moving = false end)
+	else
+		self.action:stop()
+		self.action = icon:seekLoc(pos.x, pos.y, 0.5, MOAIEaseType.SOFT_EASE_OUT)
+		self.action:setListener(MOAITimer.EVENT_TIMER_END_SPAN, function() icon.moving = false end)
+	end
+end
+
+
+
+function HeroesIcons:swapAuras()
+	for _, aura in pairs(self.auras) do
+		if aura:getIndex() == 1 then
+			aura:setIndex(2)
+		elseif aura:getIndex() == 2 then
+			aura:setIndex(1)
+		else
+			error("Something bad with auras indicies")
+		end
+	end
+end
+
 
 
 return HeroesIcons

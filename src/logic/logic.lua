@@ -58,7 +58,7 @@ function Logic:nextPhase()
 		end
 	end
 	self.phase = self.PhasesPriorities[currentPriority]
-	print("Next phase: ", self.phase, "priority:", currentPriority)
+	print("Next phase: ", self.phase)
 
 	self:doCurrentPhase()
 end
@@ -66,7 +66,7 @@ end
 
 
 function Logic:doCurrentPhase()
-	print(self.phase, "phase")
+	print(self.phase, "phase, current player", self.currentPlayer.name)
 	if self.phase == "Siege" then
 		self:siegePhase()
 
@@ -84,28 +84,35 @@ end
 
 
 function Logic:siegePhase()
+	-- for current player
 	for _, tower in ipairs(self.field.towers) do
-		local influence = 0
-		-- for current player
-		for _, hero in ipairs(self.currentPlayer.heroes) do
-			if self.field:isAdjast(tower, hero:getPosition()) then
-				influence = influence+1
-			end
-		end
+		local influence = self:getInfluenceOnTower(self.currentPlayer, tower)
+	
 		-- for opposite player
 		self:nextPlayer()
-		for _, hero in ipairs(self.players.second.heroes) do
-			if self.field:isAdjast(tower, hero:getPosition()) then
-				influence = influence-1
-			end
-		end
+		influence = influence - self:getInfluenceOnTower(self.currentPlayer, tower)
 
 		if influence > 0 then
 			self.currentPlayer.hp = self.currentPlayer.hp - 1
 		end
+
 		-- restore current player
 		self:nextPlayer()
 	end
+end
+
+
+
+function Logic:getInfluenceOnTower(player, towerPos)
+	local influence = 0
+
+	for _, hero in ipairs(player.heroes) do
+		if self.field:isAdjast(towerPos, hero:getPosition()) then
+			influence = influence+1
+		end
+	end
+
+	return influence
 end
 
 

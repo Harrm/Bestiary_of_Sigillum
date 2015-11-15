@@ -3,9 +3,7 @@ local Graphic = {}
 local Menu = require('graphic.menu')
 local Field = require('graphic.space_sygil')
 local HeroesIcons = require('graphic.heroes_icons')
-local Logic = require('logic.logic')
-Graphic.GUI = require('graphic.gui')
-local GUI = Graphic.GUI
+local GUI = require('graphic.gui')
 local ResourceManager = require('resource_manager')
 local ResourceDefinitions = require("resource_definitions")
 
@@ -138,10 +136,10 @@ end
 
 
 
-function Graphic:addHeroIcon(name, tileX, tileY)
+function Graphic:addHeroIcon(name, tileX, tileY, isEnemy)
 	local modelX, modelY = Field.grid:getTileLoc(tileX, tileY)
 	local worldX, worldY = Field.tilesProp:modelToWorld(modelX, modelY)
-	self.heroesIcons:addHero(name, {x=worldX, y=worldY})
+	self.heroesIcons:addHero(name, {x=worldX, y=worldY}, isEnemy)
 end
 
 
@@ -149,18 +147,8 @@ end
 function Graphic:moveHeroIcon(name, tileX, tileY)
 	local modelX, modelY = Field.grid:getTileLoc(tileX, tileY)
 	local worldX, worldY = Field.tilesProp:modelToWorld(modelX, modelY)
-	local prop = self.heroesIcons.icons[name]
 
-	if not prop.moving then
-		local propX, propY = prop:getLoc()
-		prop.moving = true
-		self.action = prop:seekLoc(worldX, worldY, 1)
-		self.action:setListener(MOAITimer.EVENT_TIMER_END_SPAN, function() prop.moving = false end)
-	else
-		self.action:stop()
-		self.action = prop:seekLoc(worldX, worldY, 1)
-		self.action:setListener(MOAITimer.EVENT_TIMER_END_SPAN, function() prop.moving = false end)
-	end
+	self.heroesIcons:moveHero(name, {x=worldX, y=worldY})
 end
 
 return Graphic

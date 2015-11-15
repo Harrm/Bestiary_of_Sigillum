@@ -1,7 +1,6 @@
 local Heroes = {}
 
 local Hero = require("logic.hero")
-local Field = require("logic.field")
 local Skills = require("logic.skills")
 local Effects = require("logic.effects")
 --[[
@@ -68,8 +67,33 @@ SupportSkills.PrisonerSnackles = Skills.SupportSkill.new("Prisoner Snackles",
 
 
 ]]
+Heroes.Field = nil
+
+
+function BallistarusAttack(self, targets)
+	if Heroes.Field == nil then error("You must specify field") end
+
+	if Skill.checkTargetsValid(Heroes.Field, self:getPosition(), targets[1]:getPosition()) then
+		local damage = 0
+		for _, point in Heroes.Field:getStraightLine(self:getPosition(), targets[1]:getPosition()) do
+			if Heroes.Field.cells[point.x][point.y] == Field.Landscapes.Plain or
+				Heroes.Field.cells[point.x][point.y] == Field.Landscapes.Water then
+				damage = damage + 1
+			end 
+		end
+
+		targets[1]:damage(damage)
+
+	else
+		error("Invalid targets")
+	end
+
+
+end
+
+
 local Heroes = {
-	Vinctume = Hero.new("Vinctume", 4),-- AttackSkills.SeverityOfRetaliation, SupportSkills.IronMask, SupportSkills.PrisonerSnackles)
+	Vinctume = Hero.new("Vinctume", 4),
 	Ferrarius = Hero.new("Ferrarius", 4),
 	Suxum = Hero.new("Suxum", 4),
 	Cerberus = Hero.new("Cerberus", 3),

@@ -30,7 +30,7 @@ function Game:init()
 	Graphic.newGameCallback = function() self:newGame() end
 	Graphic.exitCallback = function() Game.isOver = true end
 	Graphic.tileCheckedCallback = function(x, y) self:tileChecked(x, y) end
-	Graphic.nextPhaseCallback = function() Logic:nextPhase(); if Logic:isGameOver() then Graphic:showVictoryScreen(Logic.currentPlayer.name) end; end
+	Graphic.nextPhaseCallback = function() self:nextPhase() end
 	Graphic.heroCheckedCallback = 
 		function(heroName) self:setCurrentHero(Logic:getHero(nil, heroName)) end
 	
@@ -43,7 +43,6 @@ end
 function Game:newGame()
 	Logic:start()
 	Graphic:update()
-	Logic.players.second.hp = 0
 end
 
 
@@ -77,9 +76,13 @@ end
 
 
 
-function Game:heroChecked(heroName)
-
-
+function Game:nextPhase()
+	Logic:nextPhase()
+	if Logic:isGameOver() then
+		Graphic:showVictoryScreen(Logic.currentPlayer.name)
+	elseif Logic.phase == Logic.PhasesPriorities[1] then
+		Graphic.heroesIcons:swapAuras()
+	end
 end
 
 
@@ -87,12 +90,12 @@ end
 function Game:createHeroesIcons()
 	for _, hero in pairs(Logic.players.first.heroes) do
 		local tile = hero:getPosition()
-		Graphic:addHeroIcon(hero.name, tile.x, tile.y)
+		Graphic:addHeroIcon(hero.name, tile.x, tile.y, false)
 	end
 
 	for _, hero in pairs(Logic.players.second.heroes) do
 		local tile = hero:getPosition()
-		Graphic:addHeroIcon(hero.name, tile.x, tile.y)
+		Graphic:addHeroIcon(hero.name, tile.x, tile.y, true)
 	end
 
 
@@ -109,43 +112,5 @@ function Game.onKeyboardEvent(key, down)
 end
 
 
---[[
-function Game.logicToGraphicCoords(logicCoords)
-	local graphicCoords = {}
-
-	graphicCoords.x = math.ceil(logicCoords.x / 2)
-
-	if logicCoords.x % 2 == 0 then
-		graphicCoords.y = logicCoords.y * 2
-	
-	elseif logicCoords.x == 3 then
-		graphicCoords.y = logicCoords.y * 2 - 1
-	
-	else
-		graphicCoords.y = logicCoords.y * 2 + 1
-	end
-
-	return graphicCoords
-end
-
-
-
-function Game.graphicToLogicCoords(graphicCoords)
-	local logicCoords = {}
-
-	if graphicCoords.y % 2 == 0 then
-		logicCoords.x = graphicCoords.x * 2
-	else
-		logicCoords.x = graphicCoords.x * 2 - 1
-	end
-
-	if logicCoords.x ~= 3 then
-		logicCoords.y = math.floor(graphicCoords.y / 2)
-	else
-		logicCoords.y = math.ceil(graphicCoords.y / 2)
-	end
-
-	return logicCoords
-end--]]
 
 return Game

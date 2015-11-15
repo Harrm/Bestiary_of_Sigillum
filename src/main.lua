@@ -1,10 +1,10 @@
 WORLD_SIZE_X = 800;
 WORLD_SIZE_Y = 600;
 
-SCREEN_RESOLUTION_X = 800;
-SCREEN_RESOLUTION_Y = 600;
+SCREEN_RESOLUTION_X = 1920;
+SCREEN_RESOLUTION_Y = 1800;
 
--- DEBUG = true
+--DEBUG = true
 
 MOAISim.openWindow("Bestiary", SCREEN_RESOLUTION_X, SCREEN_RESOLUTION_Y) 
 
@@ -21,4 +21,3 @@ end
 
 gameThread = MOAICoroutine.new()
 gameThread:run(mainLoop)
-

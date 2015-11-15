@@ -28,14 +28,14 @@ function GUI:init()
 	self.heroesBars = {}
 	for i = 1, #Logic.players.first.heroes do
 		local hero = Logic.players.first.heroes[i]
-		local str = hero.name..": "..hero.wounds.."/"..hero.maxHP
+		local str = hero.name..": "..hero:getWounds().."/"..hero:getMaxHP()
 		local textbox = self:createTextbox(str, {x=-250, y=235-i*30}, {width=300, height=30}, 22)
 		self.heroesBars[hero.name] = textbox
 		self.layer:insertProp(textbox)
 	end
 	for i = 1, #Logic.players.second.heroes do
 		local hero = Logic.players.second.heroes[i]
-		local str = hero.name..": "..hero.wounds.."/"..hero.maxHP
+		local str = hero.name..": "..hero:getWounds().."/"..hero:getMaxHP()
 		local textbox = self:createTextbox(str, {x=250, y=235-i*30}, {width=300, height=30}, 22)
 		self.heroesBars[hero.name] = textbox
 		self.layer:insertProp(textbox)
@@ -80,7 +80,7 @@ function GUI:update()
 
 	for heroName, textbox in pairs(self.heroesBars) do
 		local hero = Logic:getHero(nil, heroName)
-		textbox:setString(hero.name..": "..hero.wounds.."/"..hero.maxHP)
+		textbox:setString(hero.name..": "..hero:getWounds().."/"..hero:getMaxHP())
 	end
 
 	self.phaseTextbox:setString(Logic.phase.." phase\n"..Logic.currentPlayer.name)

@@ -47,6 +47,75 @@ function Field:getLandscape(x, y)
 end
 
 
+local function makePoint(x, y)
+	return {x=x, y=y}
+end
+
+Field.StraightLines = {
+	{makePoint(1, 7), makePoint(1, 8), makePoint(2, 9)},
+	{makePoint(1, 5), makePoint(1, 6), makePoint(2, 7), makePoint(2, 8)},
+	{makePoint(1, 3), makePoint(1, 4), makePoint(2, 5), makePoint(2, 6), makePoint(3, 7)},
+	{makePoint(1, 2), makePoint(2, 3), makePoint(2, 4), makePoint(3, 5)},
+	{makePoint(2, 1), makePoint(2, 2), makePoint(3, 3)},
+
+	{makePoint(3, 1),makePoint(1, 2),makePoint(1, 3)},
+	{makePoint(2, 2),makePoint(2, 3),makePoint(1, 4),makePoint(1, 5)},
+	{makePoint(3, 3),makePoint(2, 4),makePoint(2, 5),makePoint(1, 6), makePoint(1, 7)},
+	{makePoint(3, 5),makePoint(2, 6),makePoint(2, 7),makePoint(1, 8)},
+	{makePoint(3, 7),makePoint(2, 8),makePoint(2, 9)}
+}
+
+
+
+function Field:getStraightLine(point1, point2)	-- I HATE FUCKING HEXAGONAL GRID.
+	if point1 == nil or point2 == nil then
+		error("Point is nil!")
+	end
+	local result_line = {}
+
+	if self:isAdjast(point1, point2) then
+		return {point1, point2}
+
+	else
+		if point1.x == point2.x and point1.y%2 == point2.y%2 then
+			if point1.x < point2.x then
+				for i = point1.y, point2.y, 2 do
+					table.insert(result_line, {x=point1.x, y=i})
+				end
+			else
+				for i = point1.y, point2.y, -2 do
+					table.insert(result_line, {x=point1.x, y=i})
+				end
+			end
+			return result_line
+		end
+
+		for _, line in ipairs(Field.StraightLines) do
+			for pos1, point in ipairs(line) do
+				if point.x == point1.x and point.y == point1.y then
+					for pos2, point in ipairs(line) do
+						if point.x == point2.x and point.y == point2.y then
+							if pos1 < pos2 then
+								for i = pos1, pos2 do
+									table.insert(result_line, line[i])
+								end
+							else
+								for i = pos1, pos2, -1 do
+									table.insert(result_line, line[i])
+								end
+							end
+							return result_line
+						end
+					end
+				end
+			end
+		end
+	end
+
+	return nil
+end
+
+
 
 function Field:isAdjast(point1, point2)
 	local adjastents = self:getAdjastentsCoords(point1)

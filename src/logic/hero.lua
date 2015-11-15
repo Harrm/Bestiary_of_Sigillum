@@ -7,12 +7,12 @@ function Hero.new(name, maxHP, attackSkill, supportSkill1, supportSkill2)
 	local newHero = {}
 	newHero.name = name or error("You must specify hero name")
 	newHero._position = {x=1, y=1}
-	newHero.maxHP = maxHP or error("You must specify hero health power")
-	newHero.wounds = 0
+	newHero._maxHP = maxHP or error("You must specify hero health power")
+	newHero._wounds = 0
 	newHero.effects = {}
 
-	--[[newHero.attackSkill = attackSkill
-	newHero.supportSkills = {}
+	newHero.attackSkill = attackSkill
+	--[[newHero.supportSkills = {}
 	newHero.supportSkills[1] = supportSkill1
 	newHero.supportSkills[2] = supportSkill2]]
 	setmetatable(newHero, {__index = Hero})
@@ -59,6 +59,8 @@ function Hero:setSupportSkill(skill, id)
 	end
 end
 
+
+
 function Hero:castSupportSkill(id, targets)
 	if not self.effects.Paralyse then
 		if id > 0 and id < 3 then
@@ -80,6 +82,17 @@ function Hero:castSupportSkill(id, targets)
 			error("Invalid skill id. Hero have only two support skills")
 		end
 	end
+end
+
+
+function Hero:getMaxHP()
+	return self._maxHP
+end
+
+
+
+function Hero:getWounds()
+	return self._wounds
 end
 
 
@@ -111,7 +124,7 @@ function Hero:damage(damage)
 	damage = damage - self:getArmor()
 
 	if damage > 0 then
-		self.wounds = self.wounds + damage
+		self._wounds = self._wounds + damage
 	end
 end
 

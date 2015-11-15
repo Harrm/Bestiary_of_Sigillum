@@ -11,6 +11,11 @@ local tiles = {
 	tileMapSize = {4, 4}
 }
 
+local field = {
+	type = RESOURCE_TYPE_IMAGE,
+	fileName = "field.png",
+	width = 10, height = 10
+}
 
 
 function Field:init()
@@ -22,6 +27,7 @@ function Field:init()
 	self.layer:setViewport(viewport)
 	
 	ResourceDefinitions:set("tiles", tiles)
+	ResourceDefinitions:set("field", field)
 
 	self.shown = false
 
@@ -49,10 +55,19 @@ function Field:init()
 	tilesProp:setDeck(tileDeck)
 	tilesProp:setGrid(self.grid)
 	local width, height = tilesProp:getDims()
-	tilesProp:setLoc(-width/2+32, height/2)
+	tilesProp:setLoc(-width/2, height/2)
 	tilesProp:forceUpdate()
 	self.tilesProp = tilesProp
-	self.layer:insertProp(self.tilesProp)
+	
+	local fieldDeck = ResourceManager:get("field")
+	local width, height = 480, 480
+	fieldDeck:setRect(-width/2, -height/2, width/2, height/2)
+	local fieldProp = MOAIProp2D.new()
+	fieldProp:setDeck(fieldDeck)
+	fieldProp:setLoc(-40, -32)
+
+	self.layer:insertProp(fieldProp)
+	--self.layer:insertProp(self.tilesProp)
 
 	local font = ResourceManager:get("allods_west")
 
