@@ -37,15 +37,7 @@ function Field:init()
 	self.grid:initHexGrid(GRID_COLUMNS, GRID_ROWS, 58)
 	self.grid:setRepeat(false)
 	local HIDE = MOAIGridSpace.TILE_HIDE
-	self.grid:setRow(9, HIDE, Field.Landscapes.Castle, HIDE)
-	self.grid:setRow(8, Field.Landscapes.Plain, Field.Landscapes.Plain, HIDE)
-	self.grid:setRow(7, Field.Landscapes.Hill, Field.Landscapes.Plain, Field.Landscapes.Forest)
-	self.grid:setRow(6, Field.Landscapes.Forest, Field.Landscapes.Water, HIDE)
-	self.grid:setRow(5, Field.Landscapes.Plain, Field.Landscapes.Water, Field.Landscapes.Hill)
-	self.grid:setRow(4, Field.Landscapes.Hill, Field.Landscapes.Water, HIDE)
-	self.grid:setRow(3, Field.Landscapes.Forest, Field.Landscapes.Plain, Field.Landscapes.Plain)
-	self.grid:setRow(2, Field.Landscapes.Plain, Field.Landscapes.Forest, HIDE)
-	self.grid:setRow(1, HIDE, Field.Landscapes.Castle, HIDE)
+	self.grid:fill(HIDE)
 
 	local tileDeck = ResourceManager:get("tiles")
 	local width, height, cellWidth, cellHeight = 4, 4, 0.25, 0.216796875
@@ -67,7 +59,7 @@ function Field:init()
 	fieldProp:setLoc(-40, -32)
 
 	self.layer:insertProp(fieldProp)
-	--self.layer:insertProp(self.tilesProp)
+	self.layer:insertProp(self.tilesProp)
 
 	local font = ResourceManager:get("allods_west")
 

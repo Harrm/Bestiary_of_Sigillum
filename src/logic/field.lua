@@ -2,39 +2,38 @@ local Field = {}
 
 Field.Landscapes = {Plain = 1, Forest = 2, Hill = 3, Water = 4, Castle = 5}
 
-function Field:new()
-	local field = {}
-	field.cells = {{},{},{},{},{}}
+function Field:init()
+	self.cells = {{},{},{},{},{}}
 
 	local Landscapes = Field.Landscapes
-	field.cells[1][3] = Landscapes.Forest
-	field.cells[1][5] = Landscapes.Plain
-	field.cells[1][7] = Landscapes.Hill
+	self.cells[1][3] = Landscapes.Forest
+	self.cells[1][5] = Landscapes.Plain
+	self.cells[1][7] = Landscapes.Hill
 
-	field.cells[1][2] = Landscapes.Plain
-	field.cells[1][4] = Landscapes.Hill
-	field.cells[1][6] = Landscapes.Forest
-	field.cells[1][8] = Landscapes.Plain
+	self.cells[1][2] = Landscapes.Plain
+	self.cells[1][4] = Landscapes.Hill
+	self.cells[1][6] = Landscapes.Forest
+	self.cells[1][8] = Landscapes.Plain
 
-	field.cells[2][1] = Landscapes.Castle
-	field.cells[2][3] = Landscapes.Plain
-	field.cells[2][5] = Landscapes.Water
-	field.cells[2][7] = Landscapes.Plain
-	field.cells[2][9] = Landscapes.Castle
+	self.cells[2][1] = Landscapes.Castle
+	self.cells[2][3] = Landscapes.Plain
+	self.cells[2][5] = Landscapes.Water
+	self.cells[2][7] = Landscapes.Plain
+	self.cells[2][9] = Landscapes.Castle
 
-	field.cells[2][2] = Landscapes.Forest
-	field.cells[2][4] = Landscapes.Water
-	field.cells[2][6] = Landscapes.Water
-	field.cells[2][8] = Landscapes.Plain
+	self.cells[2][2] = Landscapes.Forest
+	self.cells[2][4] = Landscapes.Water
+	self.cells[2][6] = Landscapes.Water
+	self.cells[2][8] = Landscapes.Plain
 
-	field.cells[3][3] = Landscapes.Plain
-	field.cells[3][5] = Landscapes.Hill
-	field.cells[3][7] = Landscapes.Forest
+	self.cells[3][3] = Landscapes.Plain
+	self.cells[3][5] = Landscapes.Hill
+	self.cells[3][7] = Landscapes.Forest
 
-	field.towers = {{x=1, y=5}, {x=3, y=5}}
+	self.towers = {{x=1, y=5}, {x=3, y=5}}
 
-	setmetatable(field, {__index = Field})
-	return field
+	setmetatable(self, {__index = Field})
+	return self
 end
 
 

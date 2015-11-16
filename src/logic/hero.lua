@@ -21,18 +21,6 @@ end
 
 
 
-function checkTargetsValid(targets, skill)
-	for _, target in pairs(targets) do
-		if Skill.objectInScope(targets, skill.scope) then
-			return false
-		end
-	end
-
-	return true
-end
-
-
-
 function Hero:setAttackSkill(skill)
 	self.attackSkill = skill
 end
@@ -40,11 +28,8 @@ end
 
 
 function Hero:castAttackSkill(targets)
+	print (self.attackSkill.cast)
 	if not self.effects.Paralyse then
-		if not checkTargetsValid(targets, self.attackSkill) then
-			error("Target "..target.name.." isn`t in scope")
-		end
-
 		self.attackSkill.cast(self, targets)
 	end
 end
@@ -68,10 +53,6 @@ function Hero:castSupportSkill(id, targets)
 
 			if skill.cooldown ~= 0 then
 				error("Skill is not ready")
-			end
-
-			if not checkTargetsValid(targets, skill) then
-				error("Target "..target.name.." isn`t in scope")
 			end
 
 			skill.cast(self, targets)
@@ -99,8 +80,8 @@ end
 
 function Hero:getArmor()
 	local armor = 0
-	armor = armor + self.effects.IncreaseArmor
-				  - self.effects.DecreaseArmor
+	armor = armor + (self.effects.IncreaseArmor or 0)
+				  - (self.effects.DecreaseArmor or 0)
 	if armor < 0 then
 		armor = 0
 	end
@@ -166,7 +147,7 @@ function Hero:applyEffect(effect)
 	
 	else
 		if self.effects[effect] ~= nil then
-			self.effects[effect] = self.effects[effect]+1
+			self.effects[effect] = (self.effects[effect] or 0)+1
 		end
 	end
 end

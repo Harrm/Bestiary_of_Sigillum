@@ -4,6 +4,8 @@ local Logic = require('logic.logic')
 local Graphic = require('graphic.graphic')
 local Heroes = require('logic.heroes')
 
+Game.Modes = {Move=1, Attack=2, Support=3}
+
 function Game:start()
 	self:init()
 
@@ -26,6 +28,8 @@ function Game:init()
 	Logic:addHero("Dire", Heroes.Ballistarius)
 	Logic:addHero("Dire", Heroes.Messum)
 
+	Heroes.Field = Logic.field
+
 	Graphic:init()
 	Graphic.newGameCallback = function() self:newGame() end
 	Graphic.exitCallback = function() Game.isOver = true end
@@ -36,6 +40,8 @@ function Game:init()
 	
 	self:createHeroesIcons()
 	MOAIInputMgr.device.keyboard:setCallback(self.onKeyboardEvent)
+
+	self.mode = Game.Modes.Move
 end
 
 
@@ -43,6 +49,9 @@ end
 function Game:newGame()
 	Logic:start()
 	Graphic:update()
+	self.mode = Game.Modes.Move
+	Graphic.gui.stateTextbox:setString("Move mode")
+
 end
 
 
@@ -51,13 +60,41 @@ function Game:tileChecked(tileX, tileY)
 	io.flush()
 	local logicCoords = {x=tileX, y=tileY}
 	local hero = Logic:getHero(logicCoords)
-	if hero ~= nil then
-		self:setCurrentHero(hero)
+	if self.mode == Game.Modes.Move then
+		if hero ~= nil then
+			self:setCurrentHero(hero)
 
-	elseif self.currentHero ~= nil then
-		Logic:moveHero(self.currentHero, logicCoords)
-		local graphicCoords = self.currentHero:getPosition()
-		Graphic:moveHeroIcon(self.currentHero.name, graphicCoords.x, graphicCoords.y)
+		elseif self.currentHero ~= nil then
+			Logic:moveHero(self.currentHero, logicCoords)
+			local graphicCoords = self.currentHero:getPosition()
+			Graphic:moveHeroIcon(self.currentHero.name, graphicCoords.x, graphicCoords.y)
+		end
+
+	elseif self.mode == Game.Modes.Attack then
+		if self.currentHero == nil then
+			self.currentHero = hero
+
+		elseif self.currentHero ~= nil then
+			print 'cast skill'
+
+			if self.currentHero.scope == "SixAdjast" then
+				local targets = {}
+
+				for _, cell in ipairs(Logic:getAdjastentCoords(self.currentHero:getPosition())) do
+					local hero = Logic:getHero(cell)
+					if hero ~= nil and hero.ownerPlayer ~= self.currentHero.ownerPlayer then
+						table.insert(targets, hero)
+					end
+					Logic:castSkill(self.currentHero, targets)
+				end
+			else
+				if hero ~= nil then
+					Logic:castSkill(self.currentHero, {hero})
+				end
+			end
+			self.mode = Game.Modes.Move
+			Graphic.gui.stateTextbox:setString("Move mode")
+		end
 	end
 
 	Graphic:update()
@@ -107,6 +144,14 @@ function Game.onKeyboardEvent(key, down)
 	if down then
 		if key == 27 then
 			Graphic:showMenu()
+		
+		elseif key == string.byte('a') then
+			Game.mode = Game.Modes.Attack
+			Graphic.gui.stateTextbox:setString("Attack mode")
+
+		elseif key == string.byte('m') then
+			Game.mode = Game.Modes.Move
+			Graphic.gui.stateTextbox:setString("Move mode")
 		end
 	end
 end

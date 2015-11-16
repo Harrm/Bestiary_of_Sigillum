@@ -18,7 +18,7 @@ function Logic:init(firstPlayerName, secondPlayerName, rate)
 	self.players.second = {name = secondPlayerName, hp = 27, heroes = {}, basePos = {x=2, y=9}}
 	self.currentPlayer = self.players.first
 
-	self.field = Field:new()
+	self.field = Field:init()
 end
 
 
@@ -183,7 +183,8 @@ end
 
 function Logic:castSkill(caster, targets, supportSkillId)
 	for _, hero in ipairs(self.currentPlayer.heroes) do
-		if caster == hero then
+		if caster.name == hero.name then
+			print(hero.name, "cast skill")
 			if self.phase == "Attack" then
 				caster:castAttackSkill(targets)
 			
@@ -191,12 +192,13 @@ function Logic:castSkill(caster, targets, supportSkillId)
 				caster:castSupportSkill(supportSkillId, targets)
 			
 			else
-				error("Invalid phase, can`t cast skill")
+				print("Invalid phase, can`t cast skill")
 			end
+			return
 		end
 	end
 
-	error("Invalid caster")
+	print("Invalid caster")
 end
 
 
@@ -261,6 +263,7 @@ function Logic:addHero(playerName, hero)
 
 	if #player.heroes < 3 then
 		table.insert(player.heroes, hero)
+		hero.ownerPlayer = player
 		hero:moveTo(player.basePos)
 	else
 		error("Player can`t own more then 3 heroes")

@@ -41,6 +41,8 @@ function GUI:init()
 		self.layer:insertProp(textbox)
 	end
 
+	self.stateTextbox = self:createTextbox("State", {x = -250, y = -275}, {width=300, height=30}, 22)
+	self.layer:insertProp(self.stateTextbox)
 	self.nextPhaseTextbox = self:createTextbox("Next phase", {x = 250, y = -275}, {width=300, height=30}, 22)
 	self.layer:insertProp(self.nextPhaseTextbox)
 end

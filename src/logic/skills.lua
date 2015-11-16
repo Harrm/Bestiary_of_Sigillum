@@ -22,6 +22,7 @@ Skill.MassScopes = {
 }
 
 function Skill:checkTargetsValid(field, startPos, targetsPos)
+	print 'Check target valid'
 	for _, scope in ipairs(Skill.SingleScopes) do
 		if scope == self.scope then
 			if #targetsPos ~= 1 then
@@ -43,6 +44,8 @@ function Skill:checkTargetsValid(field, startPos, targetsPos)
 					end
 				end
 			elseif scope == "RangeStraight" then
+				print("Line", field:getStraightLine(startPos, targetsPos[1]))
+				io.flush()
 				if field:getStraightLine(startPos, targetsPos[1]) ~= nil then
 					return true
 				end

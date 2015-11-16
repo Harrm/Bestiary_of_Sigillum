@@ -51,7 +51,8 @@ function Graphic:init()
 	Menu:show()
 
 	GUI:init()
-	
+	self.gui = GUI
+
 	Field:init()
 	self.heroesIcons = HeroesIcons:create()
 end
