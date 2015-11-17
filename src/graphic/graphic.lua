@@ -1,5 +1,6 @@
 local Graphic = {}
 
+local Logic = require('logic.logic')
 local Menu = require('graphic.menu')
 local Field = require('graphic.space_sygil')
 local HeroesIcons = require('graphic.heroes_icons')
@@ -133,6 +134,25 @@ end
 
 function Graphic:update()
 	GUI:update()
+
+	for _, hero in ipairs(Logic.players.first.heroes) do
+		local iconX, iconY = Field.grid:locToCoord(self.heroesIcons.icons[hero.name]:getLoc())
+		if iconX ~= hero:getPosition().x or iconY ~= hero:getPosition().y then
+			if not self.heroesIcons.icons[hero.name].moving then
+				self:moveHeroIcon(hero.name, hero:getPosition().x, hero:getPosition().y)
+			end
+		end
+	end
+
+	for _, hero in ipairs(Logic.players.second.heroes) do
+		local iconX, iconY = Field.grid:locToCoord(self.heroesIcons.icons[hero.name]:getLoc())
+		if iconX ~= hero:getPosition().x or iconY ~= hero:getPosition().y then
+			if not self.heroesIcons.icons[hero.name].moving then
+				self:moveHeroIcon(hero.name, hero:getPosition().x, hero:getPosition().y)
+			end
+		end
+	end
+
 end
 
 

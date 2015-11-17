@@ -70,6 +70,8 @@ function Skill:checkTargetsValid(field, startPos, targetsPos)
 				if #targetsPos ~= 3 then
 					return false 
 				end
+				return true
+
 			elseif scope == "FiveAdjastToAdjast" then
 				for _, adjast in ipairs(field:getAdjastentsCoords(startPos)) do
 					local adjastsTargets = 0
@@ -91,12 +93,16 @@ function Skill:checkTargetsValid(field, startPos, targetsPos)
 						return false
 					end
 				end
+				return true
+
 			elseif scope == "SixAdjastAndSelf" then
 				for _, target in ipairs(targetsPos) do
 					if not field:isAdjast(target, startPos) then
 						return false
 					end
 				end
+
+				return true
 			end 
 		end
 	end

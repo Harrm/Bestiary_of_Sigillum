@@ -14,9 +14,11 @@ function Logic:init(firstPlayerName, secondPlayerName, rate)
 	print("Rate:", rate)
 	
 	self.players = {}
-	self.players.first = {name = firstPlayerName, hp = 27, heroes = {}, basePos = {x=2, y=1}}
-	self.players.second = {name = secondPlayerName, hp = 27, heroes = {}, basePos = {x=2, y=9}}
+	self.players.first = {name = firstPlayerName, hp = 16, heroes = {}, basePos = {x=2, y=1}}
+	self.players.second = {name = secondPlayerName, hp = 16, heroes = {}, basePos = {x=2, y=9}}
 	self.currentPlayer = self.players.first
+
+	self.phase = self.PhasesPriorities[1]
 
 	self.field = Field:init()
 end
@@ -29,6 +31,19 @@ function Logic:start()
 	print("Current player:", self.currentPlayer.name)
 	self.phase = self.PhasesPriorities[1]
 	print("Phase:", self.phase)
+
+	self.players.first.hp = 16
+	self.players.second.hp = 16
+	for _, hero in ipairs(self.players.first.heroes) do
+		hero:moveTo(hero.ownerPlayer.basePos)
+		hero._wounds = 0
+	end
+	
+	for _, hero in ipairs(self.players.second.heroes) do
+		hero:moveTo(hero.ownerPlayer.basePos)
+		hero._wounds = 0
+	end
+
 	self:doCurrentPhase()
 end
 
@@ -207,7 +222,7 @@ function Logic:moveHero(hero, pos)
 	if self.phase == "Attack" then
 		for _, player_hero in pairs(self.currentPlayer.heroes) do
 			if hero ==  player_hero then
-				if self.field:isAdjast(hero:getPosition(), pos) then
+				if self.field:isAdjast(hero:getPosition(), pos) and self.field:getLandscape(pos.x, pos.y) ~= nil then
 					hero:moveTo(pos)
 				else
 					print ("Not adjast;",

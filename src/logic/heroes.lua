@@ -4,70 +4,7 @@ local Hero = require("logic.hero")
 local Skills = require("logic.skills")
 local Effects = require("logic.effects")
 local Field = require('logic.field')
---[[
-local AttackSkills = {}
-AttackSkills.SeverityOfRetaliation = {}
 
-
-function AttackSkills.SeverityOfRetaliation.castCallback(self, targets)
-	target:damage(self.wounds)
-end
-
-AttackSkills.SeverityOfRetaliation = Skills.AttackSkill.new("Severity of retaliation",
-														    1,
-									    		    		AttackSkills.SeverityOfRetaliation.isValidCallback,
-												 		    AttackSkills.SeverityOfRetaliation.castCallback)
-
-
-function AttackSkills.CrucibleOfHell.isValidCallback(start, targets)
-	
-end
-
-function AttackSkills.CrucibleOfHell.castCallback(self, targets)
-	target:damage(self.wounds)
-end
-
-AttackSkills.CrucibleOfHell = Skills.AttackSkill.new("Crucible of hell",
-													 1,
-									    		     AttackSkills.CrucibleOfHell.isValidCallback,
-												 	 AttackSkills.CrucibleOfHell.castCallback)
-
-
-local SupportSkills = {}
-SupportSkills.IronMask = {}
-function SupportSkills.IronMask.isValidCallback(start, targets)
-	if Field.isAdjast(unpack(start), unpack(target.coords)) then
-		return true
-	end
-end
-
-function SupportSkills.IronMask.castCallback(self, targets)
-	targets[1]:move(targets[1].coords.x - self.coords.x,
-					targets[1].coords.y - self.coords.y)
-end
-
-SupportSkills.IronMask = Skills.SupportSkill.new("IronMask",
-												1,
-												SupportSkills.IronMask.isValidCallback,
-												SupportSkills.IronMask.castCallback)
-SupportSkills.PrisonerSnackles = {}
-function SupportSkills.PrisonerSnackles.isValidCallback(start, targets)
-	if Field.isAdjast(unpack(start), unpack(target.coords)) then
-		return true
-	end
-end
-
-function SupportSkills.PrisonerSnackles.castCallback(self, targets)
-	target:applyEffect(Effects.Paralyzed)
-end
-
-SupportSkills.PrisonerSnackles = Skills.SupportSkill.new("Prisoner Snackles",
-											   1,
-									    	   SupportSkills.PrisonerSnackles.isValidCallback,
-											   SupportSkills.PrisonerSnackles.castCallback)
-
-
-]]
 
 
 function VinctumeAttack(self, targets)
@@ -152,7 +89,7 @@ function FerrariusAttack(self, targets)
 		table.insert(targetsPos, target:getPosition())
 	end
 
-	if Skills:checkTargetsValid(Field, self:getPosition(), targetsPos) then
+	if self.attackSkill:checkTargetsValid(Field, self:getPosition(), targetsPos) then
 		for _, target in ipairs(targets) do
 			if target.ownerPlayer ~= self.ownerPlayer and 
 				Field:getLandscape(target:getPosition().x, target:getPosition().y) ~= Field.Landscapes.Water then
