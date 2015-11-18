@@ -65,6 +65,7 @@ function Game:tileChecked(tileX, tileY)
 			self:setCurrentHero(hero)
 
 		elseif self.currentHero ~= nil then
+			print("Move hero", self.currentHero.name, "to", logicCoords.x, logicCoords.y)
 			Logic:moveHero(self.currentHero, logicCoords)
 			local graphicCoords = self.currentHero:getPosition()
 			Graphic:moveHeroIcon(self.currentHero.name, graphicCoords.x, graphicCoords.y)
@@ -77,16 +78,8 @@ function Game:tileChecked(tileX, tileY)
 		elseif self.currentHero ~= nil then
 			print 'cast skill'
 
-			if self.currentHero.scope == "SixAdjast" then
-				local targets = {}
-
-				for _, cell in ipairs(Logic:getAdjastentCoords(self.currentHero:getPosition())) do
-					local hero = Logic:getHero(cell)
-					if hero ~= nil and hero.ownerPlayer ~= self.currentHero.ownerPlayer then
-						table.insert(targets, hero)
-					end
-					Logic:castSkill(self.currentHero, targets)
-				end
+			if self.currentHero.attackSkill.scope == "SixAdjast" then
+				Logic:castSkill(self.currentHero, nil)
 			else
 				if hero ~= nil then
 					Logic:castSkill(self.currentHero, {hero})

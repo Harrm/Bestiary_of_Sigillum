@@ -75,6 +75,14 @@ function Logic:nextPhase()
 	self.phase = self.PhasesPriorities[currentPriority]
 	print("Next phase: ", self.phase)
 
+	for _, hero in ipairs(self.players.first.heroes) do
+		hero.acted = false
+	end
+	
+	for _, hero in ipairs(self.players.second.heroes) do
+		hero.acted = false
+	end
+
 	self:doCurrentPhase()
 end
 
@@ -173,7 +181,7 @@ function Logic:updateSkillsCD()
 		for _, hero in ipairs(player.heroes) do
 			for _, skill in ipairs(hero.supportSkills) do
 				if skill.cooldown > 1 then
-					skill.cooldown = skill.cooldown -1
+					skill.cooldown = skill.cooldown - 1
 				end
 			end
 		end
@@ -200,16 +208,19 @@ function Logic:castSkill(caster, targets, supportSkillId)
 	for _, hero in ipairs(self.currentPlayer.heroes) do
 		if caster.name == hero.name then
 			print(hero.name, "cast skill")
-			if self.phase == "Attack" then
-				caster:castAttackSkill(targets)
-			
-			elseif self.phase == "Support" then
-				caster:castSupportSkill(supportSkillId, targets)
-			
-			else
-				print("Invalid phase, can`t cast skill")
+			if not hero.acted then
+				if self.phase == "Attack" then
+					caster:castAttackSkill(targets)
+					hero.acted = true
+
+				elseif self.phase == "Support" then
+					caster:castSupportSkill(supportSkillId, targets)
+					hero.acted = true
+				else
+					print("Invalid phase, can`t cast skill")
+				end
+				return
 			end
-			return
 		end
 	end
 
@@ -222,12 +233,15 @@ function Logic:moveHero(hero, pos)
 	if self.phase == "Attack" then
 		for _, player_hero in pairs(self.currentPlayer.heroes) do
 			if hero ==  player_hero then
-				if self.field:isAdjast(hero:getPosition(), pos) and self.field:getLandscape(pos.x, pos.y) ~= nil then
-					hero:moveTo(pos)
-				else
-					print ("Not adjast;",
-						hero:getPosition().x, hero:getPosition().y,
-						pos.x, pos.y)
+				if not hero.acted then
+					if self.field:isAdjast(hero:getPosition(), pos) and self.field:getLandscape(pos.x, pos.y) ~= nil then
+						hero:moveTo(pos)
+						hero.acted = true
+					else
+						print ("Not adjast;",
+							hero:getPosition().x, hero:getPosition().y,
+							pos.x, pos.y)
+					end
 				end
 			end
 		end

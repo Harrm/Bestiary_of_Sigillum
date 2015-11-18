@@ -95,6 +95,8 @@ function Graphic:processMouse()
 
 				self.tileCheckedCallback(tileX, tileY)
 			end
+
+			self:update()
 		end
 		self:update()
 	end
@@ -136,7 +138,7 @@ function Graphic:update()
 	GUI:update()
 
 	for _, hero in ipairs(Logic.players.first.heroes) do
-		local iconX, iconY = Field.grid:locToCoord(self.heroesIcons.icons[hero.name]:getLoc())
+		local iconX, iconY = Field.grid:locToCoord(Field.tilesProp:worldToModel(self.heroesIcons.icons[hero.name]:getLoc()))
 		if iconX ~= hero:getPosition().x or iconY ~= hero:getPosition().y then
 			if not self.heroesIcons.icons[hero.name].moving then
 				self:moveHeroIcon(hero.name, hero:getPosition().x, hero:getPosition().y)

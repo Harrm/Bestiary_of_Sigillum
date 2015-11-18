@@ -108,7 +108,7 @@ function Hero:damage(damage)
 		self._wounds = self._wounds + damage
 	end
 
-	if self._wounds > self._maxHP then
+	if self._wounds >= self._maxHP then
 		self._position.x = self.ownerPlayer.basePos.x
 		self._position.y = self.ownerPlayer.basePos.y
 

@@ -36,7 +36,7 @@ function HeroesIcons:create()
 	self.icons = {}
 
 	self.aurasDeck = ResourceManager:get("auras")
-	self.aurasDeck:setRect(-52, -52, 52, 52)
+	self.aurasDeck:setRect(-56, -56, 56, 56)
 
 	self.auras = {}
 
